@@ -41,7 +41,7 @@ class CameraCubit extends Cubit<CameraState> {
 
     await Supabase.instance.client.from('photos').insert({
       'id': photoId,
-      'blurhash': blurHash,
+      'photohash': blurHash,
       'userId': Supabase.instance.client.auth.user()!.id,
     }).execute();
   }
