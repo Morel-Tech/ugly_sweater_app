@@ -58,9 +58,21 @@ class CameraPageView extends StatelessWidget {
                     ],
                   ),
                   if (state.imageData != null)
-                    Image.memory(
-                      state.imageData!,
-                      fit: BoxFit.cover,
+                    Stack(
+                      children: [
+                        Image.memory(
+                          state.imageData!,
+                          fit: BoxFit.cover,
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ElevatedButton(
+                            child: const Text('Upload'),
+                            onPressed: () =>
+                                context.read<CameraCubit>().uploadPhoto(),
+                          ),
+                        ),
+                      ],
                     ),
                 ],
               ),
