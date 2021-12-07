@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ugly_sweater_app/home/home.dart';
 import 'package:ugly_sweater_app/login/login.dart';
 import 'package:ugly_sweater_app/main/cubit/main_cubit.dart';
 
@@ -41,10 +42,10 @@ class AppView extends StatelessWidget {
       ),
       home: BlocBuilder<MainCubit, MainState>(
         builder: (context, state) {
-          if (state.session == null) {
-            return const LoginPage();
-          }
-          return const CameraPage();
+          // if (state.session == null) {
+          //   return const LoginPage();
+          // }
+          return const HomePage();
         },
       ),
     );

@@ -16,6 +16,8 @@ dependencies:
   loading_bloc_builder: ^0.0.1-dev.2
   supabase_flutter: ^0.2.9
   uuid: ^3.0.5
+  swipe_cards: ^0.1.0
+  octo_image: ^1.0.1
 
 dev_dependencies:
   flutter_test:

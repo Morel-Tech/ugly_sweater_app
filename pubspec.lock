@@ -153,6 +153,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.3.3"
+  flutter_blurhash:
+    dependency: transitive
+    description:
+      name: flutter_blurhash
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -261,6 +268,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  octo_image:
+    dependency: "direct main"
+    description:
+      name: octo_image
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   path:
     dependency: transitive
     description:
@@ -441,6 +455,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.9"
+  swipe_cards:
+    dependency: "direct main"
+    description:
+      name: swipe_cards
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   term_glyph:
     dependency: transitive
     description:
