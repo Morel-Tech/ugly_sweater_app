@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:blurhash/blurhash.dart';
 import 'package:camera/camera.dart';
 import 'package:equatable/equatable.dart';
 import 'package:loading_bloc_builder/loading_bloc_builder.dart';
@@ -36,8 +37,12 @@ class CameraCubit extends Cubit<CameraState> {
     await Supabase.instance.client.storage
         .from('photos')
         .uploadBinary('$photoId.png', state.imageData!);
-    Supabase.instance.client.from('photos').insert({
+    final blurHash = await BlurHash.encode(state.imageData!, 4, 3);
+
+    await Supabase.instance.client.from('photos').insert({
       'id': photoId,
-    });
+      'blurhash': blurHash,
+      'userId': Supabase.instance.client.auth.user()!.id,
+    }).execute();
   }
 }
