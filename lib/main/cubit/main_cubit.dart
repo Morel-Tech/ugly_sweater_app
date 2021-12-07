@@ -7,11 +7,16 @@ part 'main_state.dart';
 class MainCubit extends Cubit<MainState> {
   MainCubit() : super(const MainState());
 
-  void init() {
-    Supabase.instance.client.auth.onAuthStateChange((event, session) {});
-  }
-
-  void updateAuth(AuthChangeEvent event, Session? session) {
-    emit(MainState(session: session));
+  Future<void> init() async {
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session != null) {
+      emit(MainState(session: session));
+    } else {
+      final response =
+          await Supabase.instance.client.auth.getSessionFromUrl(Uri.base);
+      if (response.data != null) {
+        emit(MainState(session: response.data));
+      }
+    }
   }
 }

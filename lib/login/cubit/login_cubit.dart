@@ -8,9 +8,10 @@ class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(const LoginState());
 
   Future<void> loginWithGoogle() async {
-    await Supabase.instance.client.auth.signInWithProvider(
+    final response = await Supabase.instance.client.auth.signInWithProvider(
       Provider.google,
-      options: AuthOptions(),
     );
+
+    print(response);
   }
 }

@@ -23,7 +23,9 @@ class LoginPageView extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           child: const Text('Sign in With Google'),
-          onPressed: () {},
+          onPressed: () {
+            context.read<LoginCubit>().loginWithGoogle();
+          },
         ),
       ),
     );

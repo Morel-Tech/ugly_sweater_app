@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ugly_sweater_app/home/home.dart';
-import 'package:ugly_sweater_app/login/login.dart';
 import 'package:ugly_sweater_app/main/cubit/main_cubit.dart';
-
-import '../../camera/camera.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +11,8 @@ Future<void> main() async {
     url: 'https://navaaudglwywbbgmiqtz.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzODg0NTQ5MSwiZXhwIjoxOTU0NDIxNDkxfQ.evhVTZa6yXKHxLlmIvMqd2EdHLGQAL5zF2xlG5gUMqY',
+    authCallbackUrlHostname: 'login-callback',
+    debug: true,
   );
   runApp(const App());
 }
@@ -24,7 +23,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MainCubit(),
+      create: (context) => MainCubit()..init(),
       child: const AppView(),
     );
   }
