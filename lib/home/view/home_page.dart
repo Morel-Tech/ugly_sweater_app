@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_bloc_builder/loading_bloc_builder.dart';
+import 'package:ugly_sweater_app/camera/camera.dart';
 import 'package:ugly_sweater_app/home/cubit/home_cubit.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,8 +36,8 @@ class HomePageView extends StatelessWidget {
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
                     return SizedBox(
-                      width: 100,
-                      height: 100,
+                      width: 1000,
+                      height: 700,
                       child: Stack(
                         children: [
                           for (final picture in state.pictureList)
@@ -54,7 +55,15 @@ class HomePageView extends StatelessWidget {
                   icon: const Icon(Icons.thumb_up),
                 ),
               ],
-            )
+            ),
+            ElevatedButton(
+              child: const Text('Add picture'),
+              onPressed: () {
+                Navigator.of(context).push<void>(
+                  MaterialPageRoute(builder: (context) => const CameraPage()),
+                );
+              },
+            ),
           ],
         ),
       ),

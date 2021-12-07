@@ -17,12 +17,11 @@ class HomeCubit extends Cubit<HomeState> {
         .execute();
 
     final pictureList = <Uint8List>[];
-    final pictureIdList = <String>[];
 
     for (final photo in response.data) {
       final image = await Supabase.instance.client.storage
           .from('photos')
-          .download('84d2c909-216c-401d-b35f-985b9b2ba17f.png');
+          .download('${photo['id']}.png');
       if (image.data != null) {
         pictureList.add(image.data!);
       }
