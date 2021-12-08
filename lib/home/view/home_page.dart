@@ -23,48 +23,90 @@ class HomePageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Ugly Sweater'),
+        leading: IconButton(
+          icon: const Icon(Icons.leaderboard),
+          onPressed: () {},
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {},
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Row(
+        child: Align(
+          child: ColoredBox(
+            color: Colors.blue,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.thumb_down),
-                ),
-                BlocBuilder<HomeCubit, HomeState>(
-                  builder: (context, state) {
-                    return SizedBox(
-                      width: 1000,
-                      height: 700,
-                      child: Stack(
-                        children: [
-                          for (final picture in state.pictureList)
-                            Dismissible(
-                              key: Key(const Uuid().v4()),
-                              child: Image.memory(picture),
-                            )
-                        ],
+                ColoredBox(
+                  color: Colors.red,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.thumb_down),
                       ),
+                      BlocBuilder<HomeCubit, HomeState>(
+                        builder: (context, state) {
+                          return Stack(
+                            children: [
+                              const Positioned.fill(
+                                child: Align(
+                                  child: Text(
+                                    'Come back later to put more people on the '
+                                    'naughty or nice list.',
+                                  ),
+                                ),
+                              ),
+                              for (final picture in state.pictureList)
+                                Dismissible(
+                                  key: Key(const Uuid().v4()),
+                                  behavior: HitTestBehavior.deferToChild,
+                                  child: SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.75,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.75,
+                                    child: Expanded(
+                                      child: Image.memory(
+                                        picture,
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
+                                  ),
+                                  onDismissed: (direction) => () {},
+                                  // context.read<HomeCubit>().,
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.thumb_up),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  child: const Text('Add picture'),
+                  onPressed: () {
+                    Navigator.of(context).push<void>(
+                      MaterialPageRoute(
+                          builder: (context) => const CameraPage()),
                     );
                   },
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.thumb_up),
-                ),
               ],
             ),
-            ElevatedButton(
-              child: const Text('Add picture'),
-              onPressed: () {
-                Navigator.of(context).push<void>(
-                  MaterialPageRoute(builder: (context) => const CameraPage()),
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
