@@ -38,7 +38,27 @@ class AppView extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all<Color>(const Color(0xFFBB2528)),
+          ),
+        ),
+        colorScheme: const ColorScheme(
+          primary: Color(0xFF165B33),
+          primaryVariant: Color(0xFF146B3A),
+          onPrimary: Color(0xFFFFFFFF),
+          secondary: Color(0xFFBB2528),
+          secondaryVariant: Color(0xFFEA4630),
+          onSecondary: Color(0xFFFFFFFF),
+          surface: Color(0xFF424242),
+          onSurface: Color(0xFFFAFAFA),
+          background: Color(0xFF000000),
+          onBackground: Color(0xFFFFFFFF),
+          error: Color(0xFFf44336),
+          onError: Color(0xFF000000),
+          brightness: Brightness.light,
+        ),
       ),
       home: BlocBuilder<MainCubit, MainState>(
         builder: (context, state) {

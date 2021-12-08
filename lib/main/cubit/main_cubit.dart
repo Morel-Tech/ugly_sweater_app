@@ -19,4 +19,9 @@ class MainCubit extends Cubit<MainState> {
       }
     }
   }
+
+  Future<void> signOut() async {
+    await Supabase.instance.client.auth.signOut();
+    emit(const MainState());
+  }
 }

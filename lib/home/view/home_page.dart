@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_bloc_builder/loading_bloc_builder.dart';
 import 'package:ugly_sweater_app/camera/camera.dart';
 import 'package:ugly_sweater_app/home/cubit/home_cubit.dart';
+import 'package:ugly_sweater_app/main/main.dart';
 import 'package:uuid/uuid.dart';
 
 class HomePage extends StatelessWidget {
@@ -32,82 +33,78 @@ class HomePageView extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {},
+            onPressed: () {
+              context.read<MainCubit>().signOut();
+            },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Align(
-          child: ColoredBox(
-            color: Colors.blue,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ColoredBox(
-                  color: Colors.red,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.thumb_down),
-                      ),
-                      BlocBuilder<HomeCubit, HomeState>(
-                        builder: (context, state) {
-                          return Stack(
-                            children: [
-                              const Positioned.fill(
-                                child: Align(
-                                  child: Text(
-                                    'Come back later to put more people on the '
-                                    'naughty or nice list.',
-                                  ),
-                                ),
-                              ),
-                              for (final picture in state.pictureList)
-                                Dismissible(
-                                  key: Key(const Uuid().v4()),
-                                  behavior: HitTestBehavior.deferToChild,
-                                  child: SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.75,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.75,
-                                    child: Expanded(
-                                      child: Image.memory(
-                                        picture,
-                                        fit: BoxFit.fitWidth,
-                                      ),
-                                    ),
-                                  ),
-                                  onDismissed: (direction) => () {},
-                                  // context.read<HomeCubit>().,
-                                ),
-                            ],
-                          );
-                        },
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.thumb_up),
-                      ),
-                    ],
-                  ),
-                ),
-                ElevatedButton(
-                  child: const Text('Add picture'),
-                  onPressed: () {
-                    Navigator.of(context).push<void>(
-                      MaterialPageRoute(
-                          builder: (context) => const CameraPage()),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).push<void>(
+          MaterialPageRoute(builder: (context) => const CameraPage()),
         ),
+        child: Icon(
+          Icons.camera_alt,
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.thumb_down),
+              ),
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    height: MediaQuery.of(context).size.height * 0.8,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      alignment: Alignment.center,
+                      children: [
+                        const Positioned.fill(
+                          child: Align(
+                            child: Text(
+                              'Come back later to put more people on the '
+                              'naughty or nice list',
+                            ),
+                          ),
+                        ),
+                        for (final picture in state.pictureList)
+                          BlocBuilder<MainCubit, MainState>(
+                            builder: (context, mainState) {
+                              return Dismissible(
+                                key: Key(const Uuid().v4()),
+                                child: Image.memory(
+                                  picture,
+                                  fit: BoxFit.contain,
+                                ),
+                                onDismissed: (direction) {
+                                  context.read<HomeCubit>().onSwipe(
+                                        userId: mainState.session!.user!.id,
+                                        rating: direction,
+                                      );
+                                },
+                              );
+                            },
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.thumb_up),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
