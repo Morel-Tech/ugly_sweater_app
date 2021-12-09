@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_dynamic_calls
+
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
@@ -9,7 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(HomeState());
+  HomeCubit() : super(const HomeState());
 
   Future<void> init() async {
     emit(state.copyWith(pictureStatus: LoadingStatus.loading));
@@ -20,8 +22,7 @@ class HomeCubit extends Cubit<HomeState> {
           .select('id,photohash')
           .execute();
 
-      final pictureList = <Uint8List>[];
-      final pictureIdList = <String>[];
+      final pictures = <Picture>[];
 
       for (final photo in response.data) {
         final image = await Supabase.instance.client.storage
@@ -29,15 +30,18 @@ class HomeCubit extends Cubit<HomeState> {
             .download('${photo['id']}.png');
         if (image.data != null) {
           final photoId = photo['id'].toString();
-          pictureList.add(image.data!);
-          pictureIdList.add(photoId);
+          pictures.add(
+            Picture(
+              id: photoId,
+              image: image.data!,
+            ),
+          );
         }
       }
 
       emit(
         state.copyWith(
-          pictureList: pictureList,
-          pictureIdList: pictureIdList,
+          pictures: pictures,
           pictureStatus: LoadingStatus.success,
           pictureError: '',
         ),
@@ -51,22 +55,19 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> onSwipe({
-    required String userId,
-    required DismissDirection rating,
-  }) async {
-    final String direction;
-    if (rating == DismissDirection.startToEnd) {
-      direction = 'nice';
-    } else {
-      direction = 'naughty';
-    }
-
-    final response = await Supabase.instance.client.from('ratings').insert(
+  void onSwipe({
+    required String rating,
+    required String pictureId,
+  }) {
+    emit(
+      state.copyWith(
+          pictures: state.pictures..removeWhere((pic) => pic.id == pictureId)),
+    );
+    Supabase.instance.client.from('ratings').insert(
       {
-        'photoId': state.pictureIdList[0],
-        'userId': userId,
-        'rating': direction,
+        'photoId': pictureId,
+        'userId': Supabase.instance.client.auth.currentUser!.id,
+        'rating': rating,
       },
     ).execute();
 

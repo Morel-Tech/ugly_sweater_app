@@ -75,19 +75,22 @@ class HomePageView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        for (final picture in state.pictureList)
+                        for (final picture in state.pictures)
                           BlocBuilder<MainCubit, MainState>(
                             builder: (context, mainState) {
                               return Dismissible(
                                 key: Key(const Uuid().v4()),
                                 child: Image.memory(
-                                  picture,
+                                  picture.image,
                                   fit: BoxFit.contain,
                                 ),
                                 onDismissed: (direction) {
                                   context.read<HomeCubit>().onSwipe(
-                                        userId: mainState.session!.user!.id,
-                                        rating: direction,
+                                        pictureId: picture.id,
+                                        rating: direction ==
+                                                DismissDirection.startToEnd
+                                            ? 'nice'
+                                            : 'naughty',
                                       );
                                 },
                               );

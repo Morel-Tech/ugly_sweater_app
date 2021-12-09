@@ -30,14 +30,14 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
     with SingleTickerProviderStateMixin {
   var _dragOffset = 0.0;
   var _animating = false;
-  double get _offset => _animating ? _animation.value : _dragOffset;
+  double get _offset => _animating ? _dismissAnimation.value : _dragOffset;
 
-  late AnimationController _animation;
+  late AnimationController _dismissAnimation;
 
   @override
   void initState() {
     super.initState();
-    _animation = AnimationController(
+    _dismissAnimation = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 500),
       upperBound: 500,
@@ -50,10 +50,12 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
     return Scaffold(
       body: Center(
         child: AnimatedBuilder(
-          animation: _animation,
+          animation: _dismissAnimation,
           builder: (context, _) {
             return BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) {
+                final topPicture =
+                    state.pictures.isNotEmpty ? state.pictures.last : null;
                 return Stack(
                   children: [
                     Container(
@@ -137,59 +139,82 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                         ),
                       ),
                     ),
-                    if (state.pictureList.isNotEmpty)
-                      Align(
-                        child: Transform.translate(
-                          offset: Offset(_offset, 0),
-                          child: GestureDetector(
-                            onHorizontalDragUpdate: (details) {
-                              setState(() {
-                                _dragOffset = _dragOffset + details.delta.dx;
-                              });
-                            },
-                            onHorizontalDragEnd: (details) async {
-                              _animation.value = _dragOffset;
-                              setState(() {
-                                _animating = true;
-                              });
-                              if (_dragOffset.abs() < 100) {
-                                await _animation.animateTo(
-                                  0,
-                                  duration: Duration(
-                                    milliseconds: _dragOffset.abs().round() * 2,
-                                  ),
-                                );
+                    if (state.pictures.isNotEmpty)
+                      for (final picture in state.pictures)
+                        Align(
+                          child: Transform.translate(
+                            offset:
+                                Offset(topPicture == picture ? _offset : 0, 0),
+                            child: GestureDetector(
+                              onHorizontalDragUpdate: (details) {
                                 setState(() {
-                                  _dragOffset = 0;
-                                  _animating = false;
+                                  _dragOffset = _dragOffset + details.delta.dx;
                                 });
-                              } else {
-                                await _animation.animateTo(
-                                  _dragOffset > 0 ? 500 : -500,
-                                );
-                              }
-                            },
-                            child: Transform.rotate(
-                              angle: _offset / (200 * pi),
-                              origin: const Offset(0, 200),
-                              child: PhysicalModel(
-                                color: Colors.black,
-                                elevation: 32,
+                              },
+                              onHorizontalDragEnd: (details) async {
+                                _dismissAnimation.value = _dragOffset;
+                                setState(() {
+                                  _animating = true;
+                                });
+                                if (_dragOffset.abs() < 100) {
+                                  await _dismissAnimation.animateTo(
+                                    0,
+                                    duration: Duration(
+                                      milliseconds:
+                                          _dragOffset.abs().round() * 2,
+                                    ),
+                                  );
+                                  setState(() {
+                                    _dragOffset = 0;
+                                    _animating = false;
+                                  });
+                                } else {
+                                  await _dismissAnimation.animateTo(
+                                    _dragOffset > 0 ? 500 : -500,
+                                  );
+
+                                  context.read<HomeCubit>().onSwipe(
+                                        pictureId: picture.id,
+                                        rating: _dragOffset > 0
+                                            ? 'nice'
+                                            : 'naughty',
+                                      );
+                                  setState(() {
+                                    _dragOffset = 0;
+                                  });
+                                  await _dismissAnimation.animateTo(
+                                    0,
+                                  );
+
+                                  setState(() {
+                                    _animating = false;
+                                  });
+                                }
+                              },
+                              child: Transform.rotate(
+                                angle: topPicture == picture
+                                    ? _offset / (200 * pi)
+                                    : 0,
+                                origin: const Offset(0, 200),
                                 child: SizedBox(
                                   width: MediaQuery.of(context).size.width *
                                       (2 / 3),
                                   height: MediaQuery.of(context).size.height *
                                       (2 / 3),
-                                  child: Image.memory(
-                                    state.pictureList.first,
-                                    fit: BoxFit.cover,
+                                  child: AnimatedOpacity(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeInOut,
+                                    opacity: topPicture == picture ? 1 : 0,
+                                    child: Image.memory(
+                                      picture.image,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
@@ -221,7 +246,7 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 );
               },
@@ -245,7 +270,7 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
 
   @override
   void dispose() {
-    _animation.dispose();
+    _dismissAnimation.dispose();
     super.dispose();
   }
 }
