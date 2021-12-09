@@ -30,7 +30,15 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
     with SingleTickerProviderStateMixin {
   var _dragOffset = 0.0;
   var _animating = false;
-  double get _offset => _animating ? _dismissAnimation.value : _dragOffset;
+  var _reversingAnimation = false;
+  bool get _isInNaughty => _offset < 0;
+  bool get _isPastThreshold =>
+      _offset.abs() > MediaQuery.of(context).size.width / 4;
+
+  double get _offscreenBounds => MediaQuery.of(context).size.width / 4;
+  double get _offset {
+    return _animating ? _dismissAnimation.value : _dragOffset;
+  }
 
   late AnimationController _dismissAnimation;
 
@@ -40,8 +48,8 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
     _dismissAnimation = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 500),
-      upperBound: 500,
-      lowerBound: -500,
+      upperBound: 1000,
+      lowerBound: -1000,
     );
   }
 
@@ -55,7 +63,9 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
             return BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) {
                 final topPicture =
-                    state.pictures.isNotEmpty ? state.pictures.last : null;
+                    state.pictures.isNotEmpty && !_reversingAnimation
+                        ? state.pictures.last
+                        : null;
                 return Stack(
                   children: [
                     Container(
@@ -88,54 +98,29 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                       ),
                     ),
                     Opacity(
-                      opacity: (_offset / 200).clamp(0, 1).toDouble(),
+                      opacity: ((_offset.abs() * 4) /
+                              MediaQuery.of(context).size.width)
+                          .clamp(0, 1)
+                          .toDouble(),
                       child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 48),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'NICE',
-                                style: TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _isInNaughty ? 'NAUGHTY' : 'NICE',
+                              style: const TextStyle(
+                                fontSize: 48,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
-                              SvgPicture.asset(
-                                'assets/present.svg',
-                                height: 50,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Opacity(
-                      opacity: (_offset / -200).clamp(0, 1).toDouble(),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 48),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'NAUGHTY',
-                                style: TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SvgPicture.asset(
-                                'assets/coal.svg',
-                                height: 50,
-                              ),
-                            ],
-                          ),
+                            ),
+                            SvgPicture.asset(
+                              _isInNaughty
+                                  ? 'assets/coal.svg'
+                                  : 'assets/present.svg',
+                              height: 100,
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -156,7 +141,7 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                                 setState(() {
                                   _animating = true;
                                 });
-                                if (_dragOffset.abs() < 100) {
+                                if (!_isPastThreshold) {
                                   await _dismissAnimation.animateTo(
                                     0,
                                     duration: Duration(
@@ -170,7 +155,7 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                                   });
                                 } else {
                                   await _dismissAnimation.animateTo(
-                                    _dragOffset > 0 ? 500 : -500,
+                                    _isInNaughty ? -1000 : 1000,
                                   );
 
                                   context.read<HomeCubit>().onSwipe(
@@ -181,13 +166,13 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                                       );
                                   setState(() {
                                     _dragOffset = 0;
+                                    _reversingAnimation = true;
                                   });
-                                  await _dismissAnimation.animateTo(
-                                    0,
-                                  );
+                                  await _dismissAnimation.animateTo(0);
 
                                   setState(() {
                                     _animating = false;
+                                    _reversingAnimation = false;
                                   });
                                 }
                               },
@@ -202,7 +187,7 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                                   height: MediaQuery.of(context).size.height *
                                       (2 / 3),
                                   child: AnimatedOpacity(
-                                    duration: const Duration(milliseconds: 200),
+                                    duration: const Duration(milliseconds: 400),
                                     curve: Curves.easeInOut,
                                     opacity: topPicture == picture ? 1 : 0,
                                     child: Image.memory(
@@ -258,7 +243,7 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
   }
 
   Color get _calculateColor {
-    final opacity = (_offset.abs() / 50).clamp(0, 1).toDouble();
+    final opacity = (_offset.abs() / 150).clamp(0, 1).toDouble();
     if (_offset == 0) {
       return Colors.transparent;
     } else if (_offset > 0) {

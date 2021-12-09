@@ -49,8 +49,9 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       emit(
         state.copyWith(
-            pictureError: 'Failed to load the pictures.'
-                ' Please try again later. Thanks!'),
+          pictureError: 'Failed to load the pictures.'
+              ' Please try again later. Thanks!',
+        ),
       );
     }
   }
