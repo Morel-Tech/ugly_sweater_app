@@ -27,9 +27,14 @@ class CameraCubit extends Cubit<CameraState> {
     );
   }
 
+  void retakePhoto() {
+    init();
+  }
+
   Future<void> takePicture() async {
     final pic = await state.cameraController!.takePicture();
-    emit(state.copyWith(imageData: await pic.readAsBytes()));
+    final bytes = await pic.readAsBytes();
+    emit(state.copyWith(imageData: () => bytes));
   }
 
   Future<void> uploadPhoto() async {

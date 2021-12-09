@@ -26,13 +26,13 @@ class CameraState extends Equatable {
     List<CameraDescription>? cameras,
     LoadingStatus? camerasLoading,
     CameraController? cameraController,
-    Uint8List? imageData,
+    Uint8List? Function()? imageData,
   }) {
     return CameraState(
       cameras: cameras ?? this.cameras,
       camerasLoading: camerasLoading ?? this.camerasLoading,
       cameraController: cameraController ?? this.cameraController,
-      imageData: imageData ?? this.imageData,
+      imageData: imageData != null ? imageData() : this.imageData,
     );
   }
 }

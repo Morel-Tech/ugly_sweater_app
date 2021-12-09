@@ -1,15 +1,32 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:ugly_sweater_app/camera/camera.dart';
+import 'package:ugly_sweater_app/home/home.dart';
 
-class ExperimentalHomePage extends StatefulWidget {
+class ExperimentalHomePage extends StatelessWidget {
   const ExperimentalHomePage({Key? key}) : super(key: key);
 
   @override
-  State<ExperimentalHomePage> createState() => _ExperimentalHomePageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => HomeCubit()..init(),
+      child: const ExperimentalHomePageView(),
+    );
+  }
 }
 
-class _ExperimentalHomePageState extends State<ExperimentalHomePage>
+class ExperimentalHomePageView extends StatefulWidget {
+  const ExperimentalHomePageView({Key? key}) : super(key: key);
+
+  @override
+  State<ExperimentalHomePageView> createState() =>
+      _ExperimentalHomePageViewState();
+}
+
+class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
     with SingleTickerProviderStateMixin {
   var _dragOffset = 0.0;
   var _animating = false;
@@ -31,80 +48,183 @@ class _ExperimentalHomePageState extends State<ExperimentalHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Testing...')),
       body: Center(
         child: AnimatedBuilder(
           animation: _animation,
           builder: (context, _) {
-            return Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: const Alignment(0, 2),
-                      radius: 5,
-                      colors: [_calculateColor, Colors.white],
+            return BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) {
+                return Stack(
+                  children: [
+                    Container(
+                      color: Colors.blue,
+                      width: double.infinity,
+                      height: double.infinity,
                     ),
-                  ),
-                ),
-                Opacity(
-                  opacity: (_offset / 200).clamp(0, 1).toDouble(),
-                  child: const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Nice'),
-                  ),
-                ),
-                Opacity(
-                  opacity: (_offset / -200).clamp(0, 1).toDouble(),
-                  child: const Align(
-                    alignment: Alignment.centerRight,
-                    child: Text('Naughty'),
-                  ),
-                ),
-                Align(
-                  child: Transform.translate(
-                    offset: Offset(_offset, 0),
-                    child: GestureDetector(
-                      onHorizontalDragUpdate: (details) {
-                        setState(() {
-                          _dragOffset = _dragOffset + details.delta.dx;
-                        });
-                      },
-                      onHorizontalDragEnd: (details) async {
-                        _animation.value = _dragOffset;
-                        setState(() {
-                          _animating = true;
-                        });
-                        if (_dragOffset.abs() < 100) {
-                          await _animation.animateTo(
-                            0,
-                            duration: Duration(
-                              milliseconds: _dragOffset.abs().round() * 2,
-                            ),
-                          );
-                          setState(() {
-                            _dragOffset = 0;
-                            _animating = false;
-                          });
-                        } else {
-                          await _animation.animateTo(
-                            _dragOffset > 0 ? 500 : -500,
-                          );
-                        }
-                      },
-                      child: Transform.rotate(
-                        angle: _offset / (200 * pi),
-                        origin: const Offset(0, 200),
-                        child: Container(
-                          width: 300,
-                          height: 600,
-                          color: Colors.blue,
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [_calculateColor, Colors.white],
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ],
+                    const Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Text(
+                          'Ugly Sweater Contest 2021',
+                          style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Opacity(
+                      opacity: (_offset / 200).clamp(0, 1).toDouble(),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 48),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'NICE',
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SvgPicture.asset(
+                                'assets/present.svg',
+                                height: 50,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Opacity(
+                      opacity: (_offset / -200).clamp(0, 1).toDouble(),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 48),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'NAUGHTY',
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SvgPicture.asset(
+                                'assets/coal.svg',
+                                height: 50,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (state.pictureList.isNotEmpty)
+                      Align(
+                        child: Transform.translate(
+                          offset: Offset(_offset, 0),
+                          child: GestureDetector(
+                            onHorizontalDragUpdate: (details) {
+                              setState(() {
+                                _dragOffset = _dragOffset + details.delta.dx;
+                              });
+                            },
+                            onHorizontalDragEnd: (details) async {
+                              _animation.value = _dragOffset;
+                              setState(() {
+                                _animating = true;
+                              });
+                              if (_dragOffset.abs() < 100) {
+                                await _animation.animateTo(
+                                  0,
+                                  duration: Duration(
+                                    milliseconds: _dragOffset.abs().round() * 2,
+                                  ),
+                                );
+                                setState(() {
+                                  _dragOffset = 0;
+                                  _animating = false;
+                                });
+                              } else {
+                                await _animation.animateTo(
+                                  _dragOffset > 0 ? 500 : -500,
+                                );
+                              }
+                            },
+                            child: Transform.rotate(
+                              angle: _offset / (200 * pi),
+                              origin: const Offset(0, 200),
+                              child: PhysicalModel(
+                                color: Colors.black,
+                                elevation: 32,
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      (2 / 3),
+                                  height: MediaQuery.of(context).size.height *
+                                      (2 / 3),
+                                  child: Image.memory(
+                                    state.pictureList.first,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            side: BorderSide(color: Colors.white, width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push<void>(
+                              MaterialPageRoute(
+                                builder: (context) => const CameraPage(),
+                              ),
+                            );
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              'Enter Your Own Sweater!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              },
             );
           },
         ),
@@ -115,7 +235,7 @@ class _ExperimentalHomePageState extends State<ExperimentalHomePage>
   Color get _calculateColor {
     final opacity = (_offset.abs() / 50).clamp(0, 1).toDouble();
     if (_offset == 0) {
-      return Colors.white;
+      return Colors.transparent;
     } else if (_offset > 0) {
       return Colors.green.withOpacity(opacity);
     } else {
