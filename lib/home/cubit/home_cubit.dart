@@ -17,10 +17,12 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(pictureStatus: LoadingStatus.loading));
 
     try {
-      final response = await Supabase.instance.client
-          .from('photos')
-          .select('id,photohash')
-          .execute();
+      final response = await Supabase.instance.client.rpc(
+        'getnextphotos',
+        params: <String, String>{
+          'userid': Supabase.instance.client.auth.currentUser!.id
+        },
+      ).execute();
 
       final pictures = <Picture>[];
 
@@ -80,5 +82,9 @@ class HomeCubit extends Cubit<HomeState> {
     //     pictureError: '',
     //   ),
     // );
+  }
+
+  void dismissInstructions() {
+    emit(state.copyWith(hasShownMessage: true));
   }
 }

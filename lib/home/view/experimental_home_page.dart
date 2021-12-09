@@ -1,8 +1,11 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:loading_bloc_builder/loading_bloc_builder.dart';
 import 'package:ugly_sweater_app/camera/camera.dart';
 import 'package:ugly_sweater_app/home/home.dart';
 
@@ -35,9 +38,8 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
   bool get _isPastThreshold =>
       _offset.abs() > MediaQuery.of(context).size.width / 4;
 
-  double get _offscreenBounds => MediaQuery.of(context).size.width / 4;
   double get _offset {
-    return _animating ? _dismissAnimation.value : _dragOffset;
+    return _animating ? _dismissAnimation.value : _dragOffset * 1.1;
   }
 
   late AnimationController _dismissAnimation;
@@ -60,7 +62,43 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
         child: AnimatedBuilder(
           animation: _dismissAnimation,
           builder: (context, _) {
-            return BlocBuilder<HomeCubit, HomeState>(
+            return BlocConsumer<HomeCubit, HomeState>(
+              listenWhen: (_, curr) => !curr.hasShownMessage,
+              listener: (context, state) {
+                showDialog<void>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('How it Works'),
+                    contentPadding: const EdgeInsets.all(24),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            '1. Drag photos to the right for vote it as nice (you love it!) or the left to vote as naughty (you love how bad it is!)',
+                          ),
+                          Text(
+                            '2. Tap the button below to share your own holiday sweater!',
+                          ),
+                          Text(
+                            // ignore: avoid_escaping_inner_quotes
+                            '3. Tap the button in the top left to see who\'s sweater is the most naughty and nice.',
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          context.read<HomeCubit>().dismissInstructions();
+                        },
+                        child: const Text('Got it!'),
+                      ),
+                    ],
+                  ),
+                );
+              },
               builder: (context, state) {
                 final topPicture =
                     state.pictures.isNotEmpty && !_reversingAnimation
@@ -82,6 +120,14 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                         ),
                       ),
                     ),
+                    if (state.pictureStatus == LoadingStatus.loading)
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    if (state.pictureStatus == LoadingStatus.failure)
+                      Center(
+                        child: Text(state.pictureError),
+                      ),
                     const Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
@@ -124,7 +170,25 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                         ),
                       ),
                     ),
-                    if (state.pictures.isNotEmpty)
+                    if (state.pictures.isEmpty &&
+                        state.pictureStatus == LoadingStatus.success)
+                      const Align(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(
+                            // ignore: lines_longer_than_80_chars
+                            'No more sweaters left to vote on.\nShare your sweater below, or share with your friends for more!',
+                            style: TextStyle(
+                              fontSize: 48,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    if (state.pictures.isNotEmpty &&
+                        state.pictureStatus == LoadingStatus.success)
                       for (final picture in state.pictures)
                         Align(
                           child: Transform.translate(
@@ -183,7 +247,7 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
                                 origin: const Offset(0, 200),
                                 child: SizedBox(
                                   width: MediaQuery.of(context).size.width *
-                                      (2 / 3),
+                                      (11 / 12),
                                   height: MediaQuery.of(context).size.height *
                                       (2 / 3),
                                   child: AnimatedOpacity(
