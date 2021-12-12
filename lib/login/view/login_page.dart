@@ -20,13 +20,86 @@ class LoginPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          child: const Text('Sign in With Google'),
-          onPressed: () {
-            context.read<LoginCubit>().loginWithGoogle();
-          },
-        ),
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [Colors.blue, Colors.white],
+              ),
+            ),
+          ),
+          Image.asset('assets/snowflake1.png'),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 100),
+              child: Stack(
+                children: [
+                  Align(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 190),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 30,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(height: 60),
+                              Text(
+                                'The Ugly Sweater App',
+                                style: Theme.of(context).textTheme.headline2,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 100),
+                              ElevatedButton(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    'Sign in With Google',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  context.read<LoginCubit>().loginWithGoogle();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Image.asset(
+                      'assets/santa.png',
+                      height: 300,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
