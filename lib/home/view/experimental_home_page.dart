@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:loading_bloc_builder/loading_bloc_builder.dart';
 import 'package:ugly_sweater_app/camera/camera.dart';
 import 'package:ugly_sweater_app/home/home.dart';
+import 'package:ugly_sweater_app/leaderboard/leaderboard.dart';
 
 class ExperimentalHomePage extends StatelessWidget {
   const ExperimentalHomePage({Key? key}) : super(key: key);
@@ -58,6 +59,23 @@ class _ExperimentalHomePageViewState extends State<ExperimentalHomePageView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.leaderboard),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => const LeaderboardPage(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Center(
         child: AnimatedBuilder(
           animation: _dismissAnimation,

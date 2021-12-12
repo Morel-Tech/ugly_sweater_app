@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:ugly_sweater_app/home/home.dart';
 import 'package:ugly_sweater_app/home/view/view.dart';
 import 'package:ugly_sweater_app/login/login.dart';
 import 'package:ugly_sweater_app/main/cubit/main_cubit.dart';
