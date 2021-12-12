@@ -140,14 +140,6 @@ class CameraPageView extends StatelessWidget {
                       ],
                     ),
                   ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * (11 / 12),
-                  height: MediaQuery.of(context).size.height * (11 / 12),
-                  child: SvgPicture.asset(
-                    'assets/camera_frame.svg',
-                    fit: BoxFit.fill,
-                  ),
-                ),
               ],
             ),
           );
