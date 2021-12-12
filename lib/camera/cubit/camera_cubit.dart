@@ -18,8 +18,11 @@ class CameraCubit extends Cubit<CameraState> {
     emit(state.copyWith(camerasLoading: LoadingStatus.loading));
     final cameras = await availableCameras();
 
-    final controller =
-        CameraController(cameras[state.cameraNumber], ResolutionPreset.max);
+    final controller = CameraController(
+      cameras[state.cameraNumber],
+      ResolutionPreset.max,
+      enableAudio: false,
+    );
     await controller.initialize();
 
     emit(
