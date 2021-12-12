@@ -21,8 +21,9 @@ class CameraCubit extends Cubit<CameraState> {
     final controller =
         CameraController(cameras[state.cameraNumber], ResolutionPreset.max);
     await controller.initialize();
+
     emit(
-      CameraState(
+      state.copyWith(
         camerasLoading: LoadingStatus.success,
         cameras: cameras,
         cameraController: controller,
@@ -31,21 +32,14 @@ class CameraCubit extends Cubit<CameraState> {
   }
 
   void nextCamera() {
-    final nextCamera = state.cameras.iterator.moveNext();
-
-    if (nextCamera) {
-      emit(
-        state.copyWith(
-          cameraNumber: state.cameraNumber + 1,
-        ),
-      );
-    } else {
-      emit(
-        state.copyWith(
-          cameraNumber: 0,
-        ),
-      );
+    if (state.cameraController != null) {
+      state.cameraController!.dispose();
     }
+    emit(
+      state.copyWith(
+        cameraNumber: state.cameraNumber == 1 ? 0 : 1,
+      ),
+    );
     init();
   }
 
