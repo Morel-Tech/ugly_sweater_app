@@ -1,6 +1,6 @@
 # Holiday Sweater Contest App 🎄:santa:
 
-This web app is a virtual ugly holiday sweater contest. Anyone can upload a picutre of their sweater, and then other users will vote if the sweaters are naughty or nice.
+This web app is a virtual ugly holiday sweater contest. Anyone can upload a picture of their sweater, and then other users will vote if the sweaters are naughty or nice.
 
 **[Play with it now!! Live Demo!](https://holidaysweater.app)**
 
