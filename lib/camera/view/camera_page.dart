@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:loading_bloc_builder/loading_bloc_builder.dart';
 import 'package:ugly_sweater_app/camera/camera.dart';
 

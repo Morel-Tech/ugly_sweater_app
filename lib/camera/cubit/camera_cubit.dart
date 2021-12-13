@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
@@ -12,7 +11,7 @@ import 'package:uuid/uuid.dart';
 part 'camera_state.dart';
 
 class CameraCubit extends Cubit<CameraState> {
-  CameraCubit() : super(CameraState());
+  CameraCubit() : super(const CameraState());
 
   Future<void> init() async {
     emit(state.copyWith(camerasLoading: LoadingStatus.loading));
