@@ -79,4 +79,10 @@ class CameraCubit extends Cubit<CameraState> {
   void updatePhotoName(String name) {
     emit(state.copyWith(photoName: name));
   }
+
+  @override
+  Future<void> close() {
+    state.cameraController!.dispose();
+    return super.close();
+  }
 }

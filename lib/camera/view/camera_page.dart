@@ -165,3 +165,47 @@ class CameraPageView extends StatelessWidget {
     );
   }
 }
+
+class CameraView extends StatefulWidget {
+  const CameraView({
+    required this.cameras,
+    this.cameraNumber = 0,
+    Key? key,
+  }) : super(key: key);
+
+  final List<CameraDescription> cameras;
+  final int cameraNumber;
+
+  @override
+  _CameraViewState createState() => _CameraViewState();
+}
+
+class _CameraViewState extends State<CameraView> {
+  CameraController? _controller;
+
+  Future<void> _initializeCamera() async {
+    final _controller = CameraController(
+      widget.cameras[widget.cameraNumber],
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
+    await _controller.initialize();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
+  @override
+  Future<void> dispose() async {
+    await _controller?.dispose();
+    super.dispose();
+  }
+}

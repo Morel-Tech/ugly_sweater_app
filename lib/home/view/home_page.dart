@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_bloc_builder/loading_bloc_builder.dart';
 import 'package:ugly_sweater_app/camera/camera.dart';
 import 'package:ugly_sweater_app/home/home.dart';
@@ -161,12 +162,12 @@ class _HomePageViewState extends State<HomePageView>
                                 color: Colors.white,
                               ),
                             ),
-                            // SvgPicture.asset(
-                            //   _isInNaughty
-                            //       ? 'assets/coal.svg'
-                            //       : 'assets/present.svg',
-                            //   height: 100,
-                            // ),
+                            SvgPicture.asset(
+                              _isInNaughty
+                                  ? 'assets/coal.svg'
+                                  : 'assets/present.svg',
+                              height: 100,
+                            ),
                           ],
                         ),
                       ),
