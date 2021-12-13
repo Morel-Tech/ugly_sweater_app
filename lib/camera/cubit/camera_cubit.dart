@@ -69,10 +69,15 @@ class CameraCubit extends Cubit<CameraState> {
         'id': photoId,
         'photohash': blurHash,
         'userId': Supabase.instance.client.auth.user()!.id,
+        'name': state.photoName,
       }).execute();
     } catch (_) {
       emit(state.copyWith(uploadStatus: LoadingStatus.failure));
     }
     emit(state.copyWith(uploadStatus: LoadingStatus.success));
+  }
+
+  void updatePhotoName(String name) {
+    emit(state.copyWith(photoName: name));
   }
 }

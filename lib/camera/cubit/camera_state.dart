@@ -8,6 +8,7 @@ class CameraState extends Equatable {
     this.imageData,
     this.uploadStatus = LoadingStatus.initial,
     this.cameraNumber = 0,
+    this.photoName = '',
   });
 
   final List<CameraDescription> cameras;
@@ -18,6 +19,10 @@ class CameraState extends Equatable {
   final LoadingStatus uploadStatus;
   final int cameraNumber;
 
+  bool get isValid => photoName != '';
+
+  final String photoName;
+
   @override
   List<Object?> get props => [
         cameras,
@@ -26,6 +31,7 @@ class CameraState extends Equatable {
         imageData,
         uploadStatus,
         cameraNumber,
+        photoName,
       ];
 
   CameraState copyWith({
@@ -35,6 +41,7 @@ class CameraState extends Equatable {
     Uint8List? Function()? imageData,
     LoadingStatus? uploadStatus,
     int? cameraNumber,
+    String? photoName,
   }) {
     return CameraState(
       cameras: cameras ?? this.cameras,
@@ -43,6 +50,7 @@ class CameraState extends Equatable {
       imageData: imageData != null ? imageData() : this.imageData,
       uploadStatus: uploadStatus ?? this.uploadStatus,
       cameraNumber: cameraNumber ?? this.cameraNumber,
+      photoName: photoName ?? this.photoName,
     );
   }
 }

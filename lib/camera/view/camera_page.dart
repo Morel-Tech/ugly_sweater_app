@@ -72,10 +72,19 @@ class CameraPageView extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                        child: const Text('Take a picture'),
-                        onPressed: () =>
-                            context.read<CameraCubit>().takePicture(),
+                      child: DecoratedBox(
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          color: Colors.white,
+                          splashColor: Colors.red.shade300,
+                          padding: const EdgeInsets.all(48),
+                          icon: const Icon(Icons.camera_alt),
+                          onPressed: () =>
+                              context.read<CameraCubit>().takePicture(),
+                        ),
                       ),
                     ),
                   ),
@@ -96,22 +105,33 @@ class CameraPageView extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              labelText: 'Name Your Photo',
+                              fillColor: Colors.white,
+                              filled: true,
+                            ),
+                            onChanged:
+                                context.read<CameraCubit>().updatePhotoName,
+                          ),
+                        ),
                         if (state.uploadStatus != LoadingStatus.loading)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              OutlinedButton(
-                                child: const Text('Retake'),
-                                onPressed: () =>
-                                    context.read<CameraCubit>().retakePhoto(),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton(
-                                child: const Text('Upload'),
-                                onPressed: () =>
-                                    context.read<CameraCubit>().uploadPhoto(),
-                              ),
-                            ],
+                          BlocBuilder<CameraCubit, CameraState>(
+                            builder: (context, state) {
+                              return ElevatedButton(
+                                onPressed: state.isValid
+                                    ? () => context
+                                        .read<CameraCubit>()
+                                        .uploadPhoto()
+                                    : null,
+                                child: const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Text('Upload'),
+                                ),
+                              );
+                            },
                           ),
                         if (state.uploadStatus == LoadingStatus.loading)
                           const SizedBox(
