@@ -66,7 +66,7 @@ class AppView extends StatelessWidget {
           if (state.session == null) {
             return const LoginPage();
           }
-          return const ExperimentalHomePage();
+          return const HomePage();
         },
       ),
     );

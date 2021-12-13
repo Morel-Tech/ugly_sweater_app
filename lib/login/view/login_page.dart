@@ -33,11 +33,12 @@ class LoginPageView extends StatelessWidget {
               ),
             ),
           ),
-          Image.asset('assets/snowflake1.png'),
+          // Image.asset('assets/snowflake1.png'),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Padding(
-              padding: const EdgeInsets.only(top: 100),
+              padding:
+                  EdgeInsets.only(top: MediaQuery.of(context).size.height / 12),
               child: Stack(
                 children: [
                   Align(
@@ -59,11 +60,15 @@ class LoginPageView extends StatelessWidget {
                             children: [
                               const SizedBox(height: 60),
                               Text(
-                                'The Ugly Sweater App',
+                                'The Holiday Sweater Contest',
                                 style: Theme.of(context).textTheme.headline2,
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(height: 100),
+                              const Text(
+                                'A virtual contest to find the most nice (and naughty) holiday sweaters.',
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 50),
                               ElevatedButton(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8),

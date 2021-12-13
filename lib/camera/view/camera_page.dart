@@ -115,9 +115,7 @@ class CameraPageView extends StatelessWidget {
                           ),
                         if (state.uploadStatus == LoadingStatus.loading)
                           const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
+                            child: LinearProgressIndicator(
                               color: Colors.red,
                             ),
                           ),
